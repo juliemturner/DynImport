@@ -22,10 +22,14 @@ module.exports = {
       logLevel: 'error'
     })
   ],
+  experiments: {
+    outputModule: true,
+  },
   output: {
-    path: path.resolve(__dirname, 'dist'),
     filename: "[name].js",
-    libraryTarget: 'amd'
+    library: {
+      type: 'amd',
+    },
   },
   resolve: {
     modules: [
@@ -37,11 +41,8 @@ module.exports = {
     rules: [{
       test: /\.css$/,
       exclude: /node_modules/,
-      loader: ["style-loader", "css-loader"]
+      use: ["style-loader", "css-loader"]
     }]
   },
-  externals: [
-    'react',
-    'react-dom'
-  ]
+  externals: ['react', 'react-dom']
 };

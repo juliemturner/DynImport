@@ -12,9 +12,11 @@ const {
 /** gulp plugin */
 const ts = require('gulp-typescript'),
   plumber = require('gulp-plumber'),
-  sass = require('gulp-sass'),
+  gulp = require('gulp'),
+  sass = require('gulp-sass')(require('sass')),
   sourcemaps = require('gulp-sourcemaps'),
   autoprefixer = require('gulp-autoprefixer'),
+  webpack = require('webpack'),
   webpackStream = require('webpack-stream'),
   args = require('yargs'),
   rimraf = require('rimraf');
@@ -88,9 +90,8 @@ const sassCompile = () => {
 
 };
 
-/** TASK: webpack bundeling of styles and TypeScript */
-const webpack = () => {
-
+/** TASK: webpack bundling of styles and TypeScript */
+const package = () => {
   const webpackConfig = require('./webpack.config.js');
 
   if (isProduction) {
@@ -99,8 +100,7 @@ const webpack = () => {
 
   return src('lib/**/*.js')
     .pipe(plumber())
-    .pipe(
-      webpackStream(webpackConfig))
+    .pipe(webpackStream(webpackConfig, webpack))
     .pipe(dest('dist'));
 
 }
@@ -133,14 +133,14 @@ const watchSource = (cb) => {
 
   // watching styles
   watch('./src/**/*.s[a|c]ss',
-    series(sassCompile, webpack)
+    series(sassCompile, package)
   ).on('change', () => {
     server.reload();
   });
 
   // watching typescript
   watch('./src/**/*.{ts,tsx}',
-    series(tsCompile, webpack)
+    series(tsCompile, package)
   ).on('change', () => {
     server.reload();
   });
@@ -150,7 +150,7 @@ const watchSource = (cb) => {
 /** TASK: remove dist folder and start from scratch */
 rimraf.sync('./dist');
 
-const build = series(version, tsCompile, sassCompile, webpack);
+const build = series(version, tsCompile, sassCompile, package);
 
 exports.build = build;
 exports.serve = series(build, serve);

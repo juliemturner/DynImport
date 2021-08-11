@@ -33,11 +33,6 @@ export interface IAppScript {
 export default class TestCont extends React.Component<ITestContProps, ITestContState> {
   private LOG_SOURCE: string = "🔶TestCont";
   private _divElement: React.RefObject<HTMLDivElement>;
-  // private _scripts: IAppScript[] = [
-  //   { id: 'react', src: undefined, state: "https://cdnjs.cloudflare.com/ajax/libs/react/16.9.0/umd/react.development", priority: 0, async: false, defer: false },
-  //   { id: 'react-dom', src: undefined, state: "https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.9.0/umd/react-dom.production.min", priority: 1, async: false, defer: false },
-  //   { id: 'ReactFormLibrary', src: "https://jmtstorage.blob.core.windows.net/jt-cdn/dynamicImport/testLibrary", state: "", priority: 2, async: false, defer: false },
-  // ];
 
   private _scripts: IAppScript[] = [
     { id: 'react', src: undefined, state: "", priority: 0, async: false, defer: false },
@@ -53,14 +48,13 @@ export default class TestCont extends React.Component<ITestContProps, ITestContS
 
   public async componentDidMount() {
     // @ts-ignore: Unreachable code error
-    // const Test = await import(/* webpackIgnore: true */ 'https://jmtstorage.blob.core.windows.net/jt-cdn/dynamicImport/testLibrary.js');
-    // this._claimForm = Test;
-    const app = await this.loadTest();
+    //const app = await import(/* webpackIgnore: true */ 'https://jmtstorage.blob.core.windows.net/jt-cdn/dynamicImport/testLibrary.js');
 
-    app.Launcher({ domElement: this._divElement.current, libraryProperties: "Binding Library" });
+    const app = await this.loadTestRequire();
+    const launcher = new app.Launcher({ domElement: this._divElement.current, libraryProperties: "Binding Library" });
   }
 
-  private loadTest(): Promise<any> {
+  private loadTestRequire(): Promise<any> {
     return new Promise((resolve) => {
       let config = {};
       let modules = [];
